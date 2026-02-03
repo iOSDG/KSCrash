@@ -27,81 +27,84 @@
 #ifndef HDR_KSSpinLock_h
 #define HDR_KSSpinLock_h
 
+// 导入标准原子操作头文件
 #include <stdatomic.h>
+// 导入标准布尔类型头文件
 #include <stdbool.h>
+// 导入标准整数类型头文件
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** A simple spin lock implementation.
+/** 简单的自旋锁实现
  *
- *  This lock is async-signal-safe and can be used in crash handlers.
- *  It uses atomic operations and the CPU pause instruction for efficiency.
+ *  此锁是异步信号安全的，可以在崩溃处理程序中使用。
+ *  它使用原子操作和CPU暂停指令来提高效率。
  *
- *  WARNING: Spin locks should only be used for very short critical sections.
- *  For longer operations, use proper OS locks (pthread_mutex, os_unfair_lock).
+ *  警告：自旋锁只应用于非常短的临界区。
+ *  对于较长的操作，应使用适当的操作系统锁（pthread_mutex、os_unfair_lock）。
  *
- *  Usage:
+ *  用法：
  *      static KSSpinLock lock = KSSPINLOCK_INIT;
  *
  *      ks_spinlock_lock(&lock);
- *      // critical section
+ *      // 临界区
  *      ks_spinlock_unlock(&lock);
  */
 typedef struct {
+    // 原子类型的32位无符号整数，用于存储锁状态（0=未锁定，1=已锁定）
     _Atomic(uint32_t) _opaque;
 } KSSpinLock;
 
-/** Static initializer for KSSpinLock */
+/** KSSpinLock的静态初始化器 */
 #ifndef KSSPINLOCK_INIT
 #define KSSPINLOCK_INIT ((KSSpinLock) { 0 })
 #endif
 
-/** Initialize a spin lock.
+/** 初始化自旋锁
  *
- *  @param lock The spin lock to initialize.
+ *  @param lock 要初始化的自旋锁
  */
 void ks_spinlock_init(KSSpinLock *lock);
 
-/** Acquire the spin lock.
+/** 获取自旋锁
  *
- *  This function will spin until the lock is acquired.
+ *  此函数将自旋直到获取到锁为止。
  *
- *  @param lock The spin lock to acquire.
+ *  @param lock 要获取的自旋锁
  */
 void ks_spinlock_lock(KSSpinLock *lock);
 
-/** Try to acquire the spin lock without blocking.
+/** 尝试获取自旋锁而不阻塞
  *
- *  @param lock The spin lock to try to acquire.
- *  @return true if the lock was acquired, false if it was already held.
+ *  @param lock 要尝试获取的自旋锁
+ *  @return 如果成功获取锁则返回true，如果锁已被持有则返回false
  */
 bool ks_spinlock_try_lock(KSSpinLock *lock);
 
-/** Try to acquire the spin lock, spinning for a limited number of iterations.
+/** 尝试获取自旋锁，在有限次数的迭代中自旋
  *
- *  @param lock The spin lock to try to acquire.
- *  @param maxIterations Maximum number of spin iterations before giving up.
- *  @return true if the lock was acquired, false if maxIterations was reached.
+ *  @param lock 要尝试获取的自旋锁
+ *  @param maxIterations 放弃前最大自旋迭代次数
+ *  @return 如果成功获取锁则返回true，如果达到maxIterations则返回false
  */
 bool ks_spinlock_try_lock_with_spin(KSSpinLock *lock, uint32_t maxIterations);
 
-/** Acquire the spin lock with a bounded spin.
+/** 使用有界自旋获取自旋锁
  *
- *  This function will spin for a default number of iterations (~50,000)
- *  before giving up. This is useful in async-signal-safe contexts where
- *  indefinite blocking is not acceptable.
+ *  此函数将在放弃前自旋默认次数的迭代（约50,000次）。
+ *  这在异步信号安全上下文中很有用，因为无限阻塞是不可接受的。
  *
- *  @param lock The spin lock to acquire.
- *  @return true if the lock was acquired, false if the spin limit was reached.
+ *  @param lock 要获取的自旋锁
+ *  @return 如果成功获取锁则返回true，如果达到自旋限制则返回false
  */
 bool ks_spinlock_lock_bounded(KSSpinLock *lock);
 
-/** Release the spin lock.
+/** 释放自旋锁
  *
- *  @param lock The spin lock to release.
+ *  @param lock 要释放的自旋锁
  */
 void ks_spinlock_unlock(KSSpinLock *lock);
 

@@ -27,19 +27,22 @@
 #ifndef HDR_KSCompilerDefines_h
 #define HDR_KSCompilerDefines_h
 
-/** Disables optimisations to ensure a function remains in stacktrace.
- * Usually used in pair with `KS_THWART_TAIL_CALL_OPTIMISATION`.
+/** 禁用优化以确保函数保留在堆栈跟踪中
+ * 通常与`KS_THWART_TAIL_CALL_OPTIMISATION`配对使用
+ * 用于防止尾调用优化，确保函数在崩溃报告中可见
  */
 #define KS_KEEP_FUNCTION_IN_STACKTRACE __attribute__((disable_tail_calls))
 
-/** Disables inline optimisation.
- * Usually used in pair with `KS_KEEP_FUNCTION_IN_STACKTRACE`.
+/** 禁用内联优化
+ * 通常与`KS_KEEP_FUNCTION_IN_STACKTRACE`配对使用
+ * 用于确保函数不会被内联，从而在堆栈跟踪中可见
  */
 #define KS_NOINLINE __attribute__((noinline))
 
-/** Extra safety measure to ensure a method is not tail-call optimised.
- * This define should be placed at the end of a function.
- * Usually used in pair with `KS_KEEP_FUNCTION_IN_STACKTRACE`.
+/** 额外的安全措施，确保方法不会被尾调用优化
+ * 此定义应放置在函数的末尾
+ * 通常与`KS_KEEP_FUNCTION_IN_STACKTRACE`配对使用
+ * 使用内联汇编作为编译器屏障，防止尾调用优化
  */
 #define KS_THWART_TAIL_CALL_OPTIMISATION __asm__ __volatile__("");
 

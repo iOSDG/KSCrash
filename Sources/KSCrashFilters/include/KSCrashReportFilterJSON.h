@@ -24,51 +24,55 @@
 // THE SOFTWARE.
 //
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
+// 导入JSON编解码器Objective-C接口
 #import "KSJSONCodecObjC.h"
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Converts reports from dict to JSON.
+/** 将报告从字典格式转换为JSON格式的过滤器
  *
- * Input: NSDictionary
- * Output: NSData
+ * 输入: NSDictionary
+ * 输出: NSData
  */
 NS_SWIFT_NAME(CrashReportFilterJSONEncode)
 @interface KSCrashReportFilterJSONEncode : NSObject <KSCrashReportFilter>
 
-/** Initialize with encoding options.
- * @param options The JSON encoding options to use.
- * @return The initialized instance.
+/** 使用编码选项初始化
+ * @param options 要使用的JSON编码选项（如美化、排序等）
+ * @return 初始化后的实例
  */
 - (instancetype)initWithOptions:(KSJSONEncodeOption)options;
 
-/** Default initializer.
- * @return The initialized instance with KSJSONEncodeOptionNone.
+/** 默认初始化方法
+ * @return 使用KSJSONEncodeOptionNone选项初始化的实例
  */
 - (instancetype)init;
 
 @end
 
-/** Converts reports from JSON to dict.
+/** 将报告从JSON格式转换为字典格式的过滤器
  *
- * Input: NSData
- * Output: NSDictionary
+ * 输入: NSData
+ * 输出: NSDictionary
  */
 NS_SWIFT_NAME(CrashReportFilterJSONDecode)
 @interface KSCrashReportFilterJSONDecode : NSObject <KSCrashReportFilter>
 
-/** Initialize with decoding options.
- * @param options The JSON decoding options to use.
- * @return The initialized instance.
+/** 使用解码选项初始化
+ * @param options 要使用的JSON解码选项（如严格解析等）
+ * @return 初始化后的实例
  */
 - (instancetype)initWithOptions:(KSJSONDecodeOption)options;
 
-/** Default initializer.
- * @return The initialized instance with KSJSONDecodeOptionNone.
+/** 默认初始化方法
+ * @return 使用KSJSONDecodeOptionNone选项初始化的实例
  */
 - (instancetype)init;
 

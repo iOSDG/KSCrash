@@ -24,34 +24,38 @@
 // THE SOFTWARE.
 //
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Pops up a standard alert window and awaits a user response before continuing.
+/** 弹出标准警报窗口并在继续之前等待用户响应的过滤器
  *
- * This filter can be set up as a conditional or unconditional filter. If both a
- * "yes" and "no" button are defined, it will only continue if the user presses
- * the "yes" button. If only a "yes" button is defined ("no" button is nil), it
- * will continue unconditionally when the alert is dismissed.
+ * 此过滤器可以设置为条件或无条件过滤器。如果同时定义了"是"和"否"按钮，
+ * 则只有在用户按下"是"按钮时才会继续。如果只定义了"是"按钮（"否"按钮为nil），
+ * 则在警报被关闭时将无条件继续。
  *
- * Input: Any
- * Output: Same as input (passthrough)
+ * 输入: 任意类型
+ * 输出: 与输入相同（透传）
  */
 NS_SWIFT_NAME(CrashReportFilterAlert)
 @interface KSCrashReportFilterAlert : NSObject <KSCrashReportFilter>
 
+// 禁止使用init方法
 - (instancetype)init NS_UNAVAILABLE;
+// 禁止使用new方法
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
- * @param title The title of the alert.
- * @param message The contents of the alert.
- * @param yesAnswer The text to put in the "yes" button.
- * @param noAnswer The text to put in the "no" button. If nil, the filter will
- *                 proceed unconditionally.
+ * 初始化警报过滤器
+ * @param title 警报标题
+ * @param message 警报内容（可为nil）
+ * @param yesAnswer "是"按钮的文本
+ * @param noAnswer "否"按钮的文本。如果为nil，过滤器将无条件继续
  */
 - (instancetype)initWithTitle:(NSString *)title
                       message:(nullable NSString *)message

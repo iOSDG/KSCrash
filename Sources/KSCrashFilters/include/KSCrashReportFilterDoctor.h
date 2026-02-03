@@ -24,22 +24,29 @@
 // THE SOFTWARE.
 //
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Adds an automated diagnostis section to reports.
+ * 为报告添加自动化诊断部分的过滤器
  *
- * Input: NSDictionary
- * Output: NSDictionary
+ * 输入: NSDictionary
+ * 输出: NSDictionary（包含诊断信息）
  */
 NS_SWIFT_NAME(CrashReportFilterDoctor)
 @interface KSCrashReportFilterDoctor : NSObject <KSCrashReportFilter>
 
+/** 类方法：诊断崩溃报告
+ * @param crashReport 崩溃报告字典
+ * @return 诊断结果字符串，如果无法诊断则返回nil
+ */
 + (NSString *)diagnoseCrash:(NSDictionary *)crashReport;
 
 @end

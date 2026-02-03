@@ -24,18 +24,21 @@
 // THE SOFTWARE.
 //
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Very basic filter that passes through reports untouched.
+ * 非常基础的过滤器，原样透传报告，不做任何修改
  *
- * Input: Anything.
- * Output: Same as input (passthrough).
+ * 输入: 任意类型
+ * 输出: 与输入相同（透传）
  */
 NS_SWIFT_NAME(CrashReportFilterPassthrough)
 @interface KSCrashReportFilterPassthrough : NSObject <KSCrashReportFilter>
@@ -43,112 +46,109 @@ NS_SWIFT_NAME(CrashReportFilterPassthrough)
 @end
 
 /**
- * Passes reports to a series of subfilters, then stores the results of those operations
- * as keyed values in final master reports.
+ * 将报告传递给一系列子过滤器，然后将这些操作的结果作为键值对存储在最终的主报告中
  *
- * Input: Anything
- * Output: NSDictionary
+ * 输入: 任意类型
+ * 输出: NSDictionary（包含各子过滤器的输出，以键值对形式存储）
  */
 NS_SWIFT_NAME(CrashReportFilterCombine)
 @interface KSCrashReportFilterCombine : NSObject <KSCrashReportFilter>
 
+// 禁止使用init方法
 - (instancetype)init NS_UNAVAILABLE;
+// 禁止使用new方法
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
- * Initializer.
+ * 初始化方法
  *
- * @param filterDictionary A dictionary where each key-value pair represents a filter
- *                         and its corresponding key. The keys are strings that will
- *                         be used to store the output of their respective filters in
- *                         the final report dictionary. The values are the filters to
- *                         apply. Each filter should conform to the KSCrashReportFilter
- *                         protocol.
+ * @param filterDictionary 一个字典，其中每个键值对代表一个过滤器及其对应的键。
+ *                         键是字符串，将用于在最终报告字典中存储相应过滤器的输出。
+ *                         值是待应用的过滤器。每个过滤器都应遵循KSCrashReportFilter协议。
  *
- * @return An initialized instance of the class.
+ * @return 初始化后的类实例
  */
 - (instancetype)initWithFilters:(NSDictionary<NSString *, id<KSCrashReportFilter>> *)filterDictionary;
 
 @end
 
 /**
- * A pipeline of filters. Reports get passed through each subfilter in order.
+ * 过滤器管道。报告按顺序通过每个子过滤器
  *
- * Input: Depends on what's in the pipeline.
- * Output: Depends on what's in the pipeline.
+ * 输入: 取决于管道中的过滤器
+ * 输出: 取决于管道中的过滤器
  */
 NS_SWIFT_NAME(CrashReportFilterPipeline)
 @interface KSCrashReportFilterPipeline : NSObject <KSCrashReportFilter>
 
-/** The filters in this pipeline. */
+/** 此管道中的过滤器数组（只读，复制） */
 @property(nonatomic, readonly, copy) NSArray<id<KSCrashReportFilter>> *filters;
 
-/** Initializer using an array of filters.
+/** 使用过滤器数组初始化
  *
- * @param filters An array of filters, where each filter conforms to
- *                the KSCrashReportFilter protocol.
+ * @param filters 过滤器数组，其中每个过滤器都遵循KSCrashReportFilter协议
  */
 - (instancetype)initWithFilters:(NSArray<id<KSCrashReportFilter>> *)filters;
 
-/** Adds a filter to the beginning of the pipeline.
+/** 向管道开头添加过滤器
  *
- * @param filter The filter to be added. This filter must conform to the
- *               KSCrashReportFilter protocol. It will be inserted at the
- *               beginning of the existing filters in the pipeline.
+ * @param filter 要添加的过滤器。此过滤器必须遵循KSCrashReportFilter协议。
+ *               它将被插入到管道中现有过滤器的开头
  */
 - (void)addFilter:(id<KSCrashReportFilter>)filter;
 
 @end
 
 /**
- * Takes values by key from the report and concatenates their string representations.
+ * 从报告中按键获取值并连接它们的字符串表示
  *
- * Input: NSDictionary
- * Output: NSString
+ * 输入: NSDictionary
+ * 输出: NSString
  */
 NS_SWIFT_NAME(CrashReportFilterConcatenate)
 @interface KSCrashReportFilterConcatenate : NSObject <KSCrashReportFilter>
 
+// 禁止使用init方法
 - (instancetype)init NS_UNAVAILABLE;
+// 禁止使用new方法
 + (instancetype)new NS_UNAVAILABLE;
 
-/** Initializer using an array of keys.
+/** 使用键数组初始化
  *
- * @param separatorFmt Formatting text to use when separating the values. You may include
- *                     %@ in the formatting text to include the key name as well.
- * @param keys         An array of keys whose corresponding values will be concatenated
- *                     from the source report.
+ * @param separatorFmt 用于分隔值的格式化文本。可以在格式化文本中包含%@以包含键名
+ * @param keys 键数组，将从源报告中连接这些键对应的值
  */
 - (instancetype)initWithSeparatorFmt:(NSString *)separatorFmt keys:(NSArray<NSString *> *)keys;
 
 @end
 
 /**
- * Fetches subsets of data from the source reports. All other data is discarded.
+ * 从源报告中获取数据的子集。所有其他数据将被丢弃
  *
- * Input: NSDictionary
- * Output: NSDictionary
+ * 输入: NSDictionary
+ * 输出: NSDictionary（仅包含指定的键路径对应的数据）
  */
 NS_SWIFT_NAME(CrashReportFilterSubset)
 @interface KSCrashReportFilterSubset : NSObject <KSCrashReportFilter>
 
+// 禁止使用init方法
 - (instancetype)init NS_UNAVAILABLE;
+// 禁止使用new方法
 + (instancetype)new NS_UNAVAILABLE;
 
-/** Initializer using an array of key paths.
+/** 使用键路径数组初始化
  *
- * @param keyPaths An array of key paths to search for in the source reports.
- *                 Each key path will extract a subset of data from the reports.
+ * @param keyPaths 要在源报告中搜索的键路径数组。每个键路径将从报告中提取数据的子集
  */
 - (instancetype)initWithKeys:(NSArray<NSString *> *)keyPaths;
 
 @end
 
 /**
- * Convert UTF-8 data to an NSString.
+ * 将UTF-8数据转换为NSString
  *
- * Input: NSData
- * Output: NSString
+ * 输入: NSData
+ * 输出: NSString
  */
 NS_SWIFT_NAME(CrashReportFilterDataToString)
 @interface KSCrashReportFilterDataToString : NSObject <KSCrashReportFilter>
@@ -156,10 +156,10 @@ NS_SWIFT_NAME(CrashReportFilterDataToString)
 @end
 
 /**
- * Convert NSString to UTF-8 encoded NSData.
+ * 将NSString转换为UTF-8编码的NSData
  *
- * Input: NSString
- * Output: NSData
+ * 输入: NSString
+ * 输出: NSData
  */
 NS_SWIFT_NAME(CrashReportFilterStringToData)
 @interface KSCrashReportFilterStringToData : NSObject <KSCrashReportFilter>

@@ -24,60 +24,64 @@
 // THE SOFTWARE.
 //
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * An enumeration defining the levels of Gzip compression for crash reports.
+ * 定义崩溃报告Gzip压缩级别的枚举
  *
- * Compression levels range from 0 to 9, where:
- * - 0: No compression.
- * - 9: Best compression.
- * - -1: Default compression level.
+ * 压缩级别范围从0到9，其中：
+ * - 0: 无压缩
+ * - 9: 最佳压缩
+ * - -1: 默认压缩级别
  *
- * You can initialize this with any integer value between 0 and 9.
+ * 可以使用0到9之间的任何整数值初始化此类型
  */
 typedef NSInteger KSCrashReportCompressionLevel NS_TYPED_EXTENSIBLE_ENUM NS_SWIFT_NAME(CrashReportCompressionLevel);
-/** No compression level. */
+/** 无压缩级别 */
 static KSCrashReportCompressionLevel const KSCrashReportCompressionLevelNone = 0;
-/** Best compression level. */
+/** 最佳压缩级别 */
 static KSCrashReportCompressionLevel const KSCrashReportCompressionLevelBest = 9;
-/** Default compression level. */
+/** 默认压缩级别 */
 static KSCrashReportCompressionLevel const KSCrashReportCompressionLevelDefault = -1;
 
 /**
- * Gzip compresses reports.
+ * Gzip压缩报告的过滤器
  *
- * Input: NSData
- * Output: NSData
+ * 输入: NSData
+ * 输出: NSData（压缩后的数据）
  */
 NS_SWIFT_NAME(CrashReportFilterGZipCompress)
 @interface KSCrashReportFilterGZipCompress : NSObject <KSCrashReportFilter>
 
+// 禁止使用init方法
 - (instancetype)init NS_UNAVAILABLE;
+// 禁止使用new方法
 + (instancetype)new NS_UNAVAILABLE;
 
-/** Initializer.
+/** 初始化方法
  *
- * @param compressionLevel Compression level for Gzip compression. It can be
- *                         one of the following `KSCrashReportCompressionLevel` values:
- *                         - `KSCrashReportCompressionLevelNone` (0): No compression.
- *                         - `KSCrashReportCompressionLevelBest` (9): Best compression.
- *                         - `KSCrashReportCompressionLevelDefault` (-1): Default compression level.
- *                         The compression level can be any integer value between 0 and 9.
+ * @param compressionLevel Gzip压缩的压缩级别。可以是以下`KSCrashReportCompressionLevel`值之一：
+ *                         - `KSCrashReportCompressionLevelNone` (0): 无压缩
+ *                         - `KSCrashReportCompressionLevelBest` (9): 最佳压缩
+ *                         - `KSCrashReportCompressionLevelDefault` (-1): 默认压缩级别
+ *                         压缩级别可以是0到9之间的任何整数值
  */
 - (instancetype)initWithCompressionLevel:(KSCrashReportCompressionLevel)compressionLevel;
 
 @end
 
-/** Gzip decompresses reports.
+/** Gzip解压缩报告的过滤器
  *
- * Input: NSData
- * Output: NSData
+ * 输入: NSData（压缩后的数据）
+ * 输出: NSData（解压缩后的数据）
  */
 NS_SWIFT_NAME(CrashReportFilterGZipDecompress)
 @interface KSCrashReportFilterGZipDecompress : NSObject <KSCrashReportFilter>

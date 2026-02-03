@@ -26,38 +26,42 @@
 
 #ifdef __OBJC__
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
 
 /**
- * Simpler interface for constructing NSError objects.
+ * 用于构造NSError对象的简化接口
+ * 提供便利方法来创建和填充NSError对象
  */
 @interface KSNSErrorHelper : NSObject
 
-/** Convenience constructor to make an error with the specified localized description.
+/** 便利构造器：创建具有指定本地化描述的错误
  *
- * @param domain The domain
- * @param code The code
- * @param fmt Description of the error (gets placed into the user data with the key
- *                    NSLocalizedDescriptionKey).
+ * @param domain 错误域（用于标识错误的来源）
+ * @param code 错误代码
+ * @param fmt 错误描述（格式化字符串，支持可变参数）
+ *            此描述将被放置在用户信息字典中，键为NSLocalizedDescriptionKey
+ * @return 创建的NSError对象
  */
 + (NSError *)errorWithDomain:(NSString *)domain code:(NSInteger)code description:(NSString *)fmt, ...;
 
-/** Fill an error pointer with an NSError object if it's not nil.
+/** 如果错误指针不为nil，则用NSError对象填充它
  *
- * @param error Error pointer to fill (ignored if nil).
- * @param domain The domain
- * @param code The code
- * @param fmt Description of the error (gets placed into the user data with the key
- *                    NSLocalizedDescriptionKey).
- * @return NO (to keep the analyzer happy).
+ * @param error 要填充的错误指针（如果为nil则忽略）
+ * @param domain 错误域（用于标识错误的来源）
+ * @param code 错误代码
+ * @param fmt 错误描述（格式化字符串，支持可变参数）
+ *            此描述将被放置在用户信息字典中，键为NSLocalizedDescriptionKey
+ * @return NO（用于保持静态分析器满意）
  */
 + (BOOL)fillError:(NSError **)error withDomain:(NSString *)domain code:(NSInteger)code description:(NSString *)fmt, ...;
 
-/** Clear a pointer-to-error to nil of its pointer is not nil.
+/** 如果错误指针不为nil，则将其清空为nil
  *
- * @param error Error pointer to fill (ignored if nil).
- * @return NO (to keep the analyzer happy).
+ * @param error 要清空的错误指针（如果为nil则忽略）
+ * @return NO（用于保持静态分析器满意）
  */
 + (BOOL)clearError:(NSError **)error;
 

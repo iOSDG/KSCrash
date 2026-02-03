@@ -24,24 +24,34 @@
 // THE SOFTWARE.
 //
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
+// 导入Apple格式过滤器
 #import "KSCrashReportFilterAppleFmt.h"
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Common filter sets.
+ * 常用过滤器集合
+ * 提供预配置的过滤器组合，方便快速使用
  */
 NS_SWIFT_NAME(CrashFilterSets)
 @interface KSCrashFilterSets : NSObject
 
+// 禁止使用init方法
 - (instancetype)init NS_UNAVAILABLE;
+// 禁止使用new方法
 + (instancetype)new NS_UNAVAILABLE;
 
-/** Create an Apple format filter that includes system and user data in JSON format.
+/** 创建包含系统和用户数据的Apple格式过滤器
+ * @param reportStyle Apple报告样式（符号化选项）
+ * @param compressed 是否压缩最终输出
+ * @return 配置好的过滤器管道，包含Apple格式报告和JSON格式的系统/用户数据
  */
 + (id<KSCrashReportFilter>)appleFmtWithUserAndSystemData:(KSAppleReportStyle)reportStyle compressed:(BOOL)compressed;
 

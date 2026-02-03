@@ -24,108 +24,97 @@
 // THE SOFTWARE.
 //
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Affects how an Apple-style crash report is generated.
+/** 影响Apple风格崩溃报告的生成方式
  *
- * KSCrashReporter reports contain symbolication data which can be used in place
- * of normal offsets when generating an Apple-style report. The report style you
- * should choose depends on what symbols will be present in the application,
- * and what information will be available for offline symbolication (e.g. with
- * Apple's symbolication tools).
+ * KSCrashReporter报告包含符号化数据，可以在生成Apple风格报告时替代普通偏移量。
+ * 您应该选择的报告样式取决于应用程序中将存在哪些符号，以及离线符号化可用的信息
+ * （例如，使用Apple的符号化工具）。
  *
- * There are three levels of symbolication:
+ * 有三种符号化级别：
  *
- * - Unsymbolicated: Contains a base address and an offset.
- *                   e.g. 0x0000347a 0x1000 + 9338
+ * - 未符号化：包含基址和偏移量。
+ *                   例如：0x0000347a 0x1000 + 9338
  *
- * - Basic: Contains base address, method name, and an offset into the method.
- *          e.g. 0x372bd97e -[UIControl sendAction:to:forEvent:] + 38
+ * - 基本符号化：包含基址、方法名和方法内的偏移量。
+ *               例如：0x372bd97e -[UIControl sendAction:to:forEvent:] + 38
  *
- * - Full: Similar to basic, but the offset is converted to a line number.
- *         e.g. 0x0000347a +[MyObject someMethod] (MyObject.m:21)
+ * - 完整符号化：与基本符号化类似，但偏移量转换为行号。
+ *               例如：0x0000347a +[MyObject someMethod] (MyObject.m:21)
  *
- * Full symbolication can only be done (and is only useful) for your own code.
- * Full symbolication information is only available from the dSYM file that
- * matches your app, so it can only be retrieved by offline symbolication.
- * For dynamic libraries (such as libc, UIKit, Foundation, etc), only basic
- * symbolication is available (online or offline).
+ * 完整符号化只能（并且只对）您自己的代码进行。完整符号化信息只能从与您的应用
+ * 匹配的dSYM文件中获得，因此只能通过离线符号化检索。对于动态库（如libc、UIKit、
+ * Foundation等），只有基本符号化可用（在线或离线）。
  *
- * All iOS devices have basic symbol information on-board for dynamic libraries
- * (such as libc, UIKit, Foundation, etc). It's recommended to symbolicate these
- * on the device as it's not guaranteed that the machine you're offline
- * symbolicating from will have the same version available (for example, having
- * symbols available for iOS 4.2 - 5.01, but not for iOS 4.0).
+ * 所有iOS设备都内置了动态库的基本符号信息（如libc、UIKit、Foundation等）。
+ * 建议在设备上对这些进行符号化，因为不能保证您进行离线符号化的机器将具有相同
+ * 的版本可用（例如，iOS 4.2 - 5.01的符号可用，但iOS 4.0的不可用）。
  *
- * App symbols are present only if you have set "Strip Style" in your build
- * settings to "Debugging Symbols" (which strips all debugging symbols, but
- * leaves basic symbol information intact). This increases your app's code
- * footprint by about 10%, but allows basic symbolication on the device.
+ * 应用符号只有在您将构建设置中的"Strip Style"设置为"Debugging Symbols"时才会存在
+ * （这会剥离所有调试符号，但保留基本符号信息完整）。这会使应用的代码占用增加约10%，
+ * 但允许在设备上进行基本符号化。
  *
- * Choosing KSAppleReportStylePartiallySymbolicated symbolicates everything
- * except main executable entries so that you can use an offline symbolicator.
- * You will need a dsym file to symbolicate those entries.
+ * 选择KSAppleReportStylePartiallySymbolicated会对除主可执行文件条目外的所有内容
+ * 进行符号化，以便您可以使用离线符号化工具。您需要dSYM文件来对这些条目进行符号化。
  *
- * KSAppleReportStyleSymbolicatedSideBySide generates a best-of-both-worlds
- * report where everything is symbolicated, but any offsets in the main
- * executable will retain both their "unsymbolicated" and "symbolicated"
- * versions side-by-side so that an offline symbolicator can still parse the
- * line and determine the line numbers (provided you have a matching dsym file).
+ * KSAppleReportStyleSymbolicatedSideBySide生成一个两全其美的报告，其中所有内容都已
+ * 符号化，但主可执行文件中的任何偏移量将同时保留其"未符号化"和"符号化"版本，
+ * 以便离线符号化工具仍然可以解析该行并确定行号（前提是您有匹配的dSYM文件）。
  *
- * In short, if you're not worried about line numbers, or you don't want to
- * do offline symbolication, go with KSAppleReportStyleSymbolicated.
- * If you DO care about line numbers, have the dsym file handy, and will be
- * symbolicating offline, use KSAppleReportStyleSymbolicatedSideBySide.
+ * 简而言之，如果您不关心行号，或者不想进行离线符号化，请使用KSAppleReportStyleSymbolicated。
+ * 如果您确实关心行号，有dSYM文件可用，并且将进行离线符号化，请使用KSAppleReportStyleSymbolicatedSideBySide。
  */
 typedef NS_ENUM(NSInteger, KSAppleReportStyle) {
-    /** Leave all stack trace entries unsymbolicated. */
+    /** 保留所有栈跟踪条目未符号化 */
     KSAppleReportStyleUnsymbolicated,
 
-    /** Symbolicate all stack trace entries except for those in the main
-     * executable.
-     */
+    /** 对除主可执行文件中的条目外的所有栈跟踪条目进行符号化 */
     KSAppleReportStylePartiallySymbolicated,
 
-    /** Symbolicate all stack trace entries, but for any in the main executable,
-     * put both an unsymbolicated and a symbolicated entry side-by-side.
+    /** 对所有栈跟踪条目进行符号化，但对于主可执行文件中的任何条目，
+     *  同时保留未符号化和符号化的条目
      */
     KSAppleReportStyleSymbolicatedSideBySide,
 
-    /** Symbolicate everything. */
+    /** 对所有内容进行符号化 */
     KSAppleReportStyleSymbolicated
 } NS_SWIFT_NAME(AppleReportStyle);
 
-/** Converts to Apple format.
+/** 转换为Apple格式的过滤器
  *
- * Input: NSDictionary
- * Output: NSString
+ * 输入: NSDictionary
+ * 输出: NSString（Apple格式的崩溃报告字符串）
  */
 NS_SWIFT_NAME(CrashReportFilterAppleFmt)
 @interface KSCrashReportFilterAppleFmt : NSObject <KSCrashReportFilter>
 
-/** Initialize with a specific Apple report style.
- * @param reportStyle The Apple report style to use for symbolication.
- * @return The initialized instance.
- * @see KSAppleReportStyle for detailed information on symbolication options.
+/** 使用特定的Apple报告样式初始化
+ * @param reportStyle 用于符号化的Apple报告样式
+ * @return 初始化后的实例
+ * @see KSAppleReportStyle 获取符号化选项的详细信息
  */
 - (instancetype)initWithReportStyle:(KSAppleReportStyle)reportStyle;
 
-/** Default initializer.
- * @return The initialized instance with KSAppleReportStyleSymbolicated.
- * @note This style symbolicates all stack trace entries.
+/** 默认初始化方法
+ * @return 使用KSAppleReportStyleSymbolicated样式初始化的实例
+ * @note 此样式对所有栈跟踪条目进行符号化
  */
 - (instancetype)init;
 
-/** Generate a header string for the Apple-style crash report.
- * @param system Dictionary containing system information (e.g., device, OS, app details).
- * @param reportID Unique identifier for the crash report.
- * @param crashTime Timestamp of when the crash occurred.
- * @return Formatted header string including incident identifier, hardware model, process info, OS version, etc.
+/** 为Apple风格崩溃报告生成标题字符串
+ * @param system 包含系统信息的字典（例如，设备、操作系统、应用详情）
+ * @param reportID 崩溃报告的唯一标识符（可为nil）
+ * @param crashTime 崩溃发生的时间戳（可为nil）
+ * @return 格式化的标题字符串，包括事件标识符、硬件型号、进程信息、操作系统版本等
  */
 - (NSString *)headerStringForSystemInfo:(NSDictionary<NSString *, id> *)system
                                reportID:(nullable NSString *)reportID

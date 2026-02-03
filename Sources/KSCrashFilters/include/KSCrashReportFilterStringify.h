@@ -23,14 +23,18 @@
 // THE SOFTWARE.
 //
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Converts objects into strings.
+/** 将对象转换为字符串的过滤器
+ * 支持将字典、数据、字符串等类型的报告转换为字符串格式
  */
 NS_SWIFT_NAME(CrashReportFilterStringify)
 @interface KSCrashReportFilterStringify : NSObject <KSCrashReportFilter>
