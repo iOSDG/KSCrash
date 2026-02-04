@@ -27,14 +27,22 @@
 #ifndef KSCrashMonitor_BootTime_h
 #define KSCrashMonitor_BootTime_h
 
+// 导入崩溃监控器API头文件
 #include "KSCrashMonitorAPI.h"
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** Access the Monitor API.
+/** 访问启动时间监控器API
+ * 
+ *  此函数返回启动时间监控器的API结构，该监控器用于捕获和报告设备的启动时间。
+ *  启动时间信息通过sysctl获取，并添加到崩溃报告的System信息中。
+ * 
+ *  @return 指向KSCrashMonitorAPI结构的指针，包含监控器的所有函数指针
+ *          包括：monitorId、setEnabled、isEnabled、addContextualInfoToEvent等
  */
 KSCrashMonitorAPI *kscm_boottime_getAPI(void);
 
