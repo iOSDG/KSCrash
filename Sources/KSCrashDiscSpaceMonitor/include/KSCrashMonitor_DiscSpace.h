@@ -27,7 +27,9 @@
 #ifndef KSCrashMonitor_DiscSpace_h
 #define KSCrashMonitor_DiscSpace_h
 
+// 导入崩溃监控器API头文件
 #include "KSCrashMonitorAPI.h"
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
 
 #ifdef __cplusplus
@@ -36,6 +38,11 @@ extern "C" {
 
 /** Access the Monitor API.
  */
+// 访问磁盘空间监控器API
+// 此函数返回磁盘空间监控器的API结构，该监控器用于捕获和报告设备的磁盘空间信息。
+// 磁盘空间信息包括总存储大小和可用存储空间大小，通过NSFileManager获取。
+// @return 指向KSCrashMonitorAPI结构的指针，包含监控器的所有函数指针
+//         包括：monitorId、setEnabled、isEnabled、addContextualInfoToEvent等
 KSCrashMonitorAPI *kscm_discspace_getAPI(void);
 
 #ifdef __cplusplus
