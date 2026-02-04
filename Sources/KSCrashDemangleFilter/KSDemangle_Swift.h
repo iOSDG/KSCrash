@@ -27,6 +27,7 @@
 #ifndef HDR_KSDemangle_Swift_h
 #define HDR_KSDemangle_Swift_h
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
 
 #ifdef __cplusplus
@@ -41,6 +42,13 @@ extern "C" {
  *
  * @return A demangled symbol, or NULL if demangling failed.
  */
+// 反混淆Swift符号
+// 使用Swift运行时的swift_demangle函数来反混淆Swift符号名称。
+// 此函数通过动态链接（dlsym）获取Swift运行时的反混淆函数。
+// 如果Swift运行时不可用，则返回NULL。
+// @warning 内存管理警告：调用者负责对返回值调用free()释放内存
+// @param mangledSymbol 混淆的Swift符号字符串（以null结尾）
+// @return 反混淆后的符号字符串（使用malloc分配，需要调用者释放），如果反混淆失败或Swift运行时不可用则返回NULL
 char *ksdm_demangleSwift(const char *mangledSymbol);
 
 #ifdef __cplusplus

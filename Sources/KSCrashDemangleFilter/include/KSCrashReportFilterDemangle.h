@@ -24,10 +24,14 @@
 // THE SOFTWARE.
 //
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
+// 导入崩溃报告过滤器协议
 #import "KSCrashReportFilter.h"
+// 导入JSON编解码器Objective-C接口
 #import "KSJSONCodecObjC.h"
 
+// 导入Foundation框架
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,6 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
  * Input: NSDictionary
  * Output: NSDictionary
  */
+// 反混淆原始崩溃报告中的符号
+// 此过滤器用于将崩溃报告中的混淆符号（C++和Swift）转换为可读的符号名称。
+// 它会递归遍历报告中的特定路径，查找并反混淆符号名称。
+// 输入: NSDictionary（包含混淆符号的崩溃报告）
+// 输出: NSDictionary（符号已反混淆的崩溃报告）
 NS_SWIFT_NAME(CrashReportFilterDemangle)
 @interface KSCrashReportFilterDemangle : NSObject <KSCrashReportFilter>
 
@@ -46,6 +55,9 @@ NS_SWIFT_NAME(CrashReportFilterDemangle)
  *
  * @return A demangled symbol, or `nil` if demangling failed.
  */
+// 反混淆C++符号
+// @param symbol 混淆的C++符号字符串
+// @return 反混淆后的符号字符串，如果反混淆失败则返回nil
 + (nullable NSString *)demangledCppSymbol:(NSString *)symbol;
 
 /** Demangles a Swift symbol.
@@ -54,6 +66,9 @@ NS_SWIFT_NAME(CrashReportFilterDemangle)
  *
  * @return A demangled symbol, or `nil` if demangling failed.
  */
+// 反混淆Swift符号
+// @param symbol 混淆的Swift符号字符串
+// @return 反混淆后的符号字符串，如果反混淆失败或系统不支持Swift则返回nil
 + (nullable NSString *)demangledSwiftSymbol:(NSString *)symbol;
 
 @end

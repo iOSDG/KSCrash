@@ -27,6 +27,7 @@
 #ifndef HDR_KSDemangle_CPP_h
 #define HDR_KSDemangle_CPP_h
 
+// 导入命名空间头文件
 #include "KSCrashNamespace.h"
 
 #ifdef __cplusplus
@@ -42,6 +43,12 @@ extern "C" {
  * @return A demangled symbol, or NULL if demangling failed.
  *         MEMORY MANAGEMENT WARNING: User is responsible for calling free() on the returned value.
  */
+// 反混淆C++符号
+// 使用C++ ABI库（libcxxabi）的__cxa_demangle函数来反混淆C++符号名称。
+// 此函数将混淆的C++符号（如_Z3fooi）转换为可读的符号名称（如foo(int)）。
+// @warning 内存管理警告：调用者负责对返回值调用free()释放内存
+// @param mangledSymbol 混淆的C++符号字符串（以null结尾）
+// @return 反混淆后的符号字符串（使用malloc分配，需要调用者释放），如果反混淆失败则返回NULL
 char *ksdm_demangleCPP(const char *mangledSymbol);
 
 #ifdef __cplusplus
